@@ -1,13 +1,11 @@
-import ctypes
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+import ctypes
 
 img = cv2.imread('ubc_logo.jpg')
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 rows, cols, layers = img.shape
-
 
 # linking map_pixels function from c
 lib = ctypes.cdll.LoadLibrary('imageTranformation.so')
@@ -20,7 +18,8 @@ map_pixels = lib.map_pixels
 def transform_image(img, matrix):
     rows, cols, layers = img.shape
     # creates white background image
-    background_img = np.ndarray.tolist(np.full((rows, cols), 255))
+    background_img = np.full((rows, cols, layers), 255).astype('uint8')
+
     # make the matrix of coordinates
     col_base = np.arange(cols)
     x_coords = np.tile(col_base, rows)
@@ -40,39 +39,21 @@ def transform_image(img, matrix):
     # move back to original position
     translationVectorInverse = np.array([[cols/2], [rows/2]])
     transformed_coords = transformed_coords + translationVectorInverse
-    transformed_coords = transformed_coords.astype(int)
+    transformed_coords = transformed_coords.astype('int32')
 
-    # map each pixel in original image to background img according
-    # to the positions in transformed_coords
-    fullImg = np.array([])
-    for i in range(layers):
-        # fn transformed_coords, np.dsplit(img, 3)[i], rows, cols, background_img --> background_img
-        # map each pixel in layer of img to background img corresponding to transformed_coords
-        for j in range(rows * cols):
-            x_val = transformed_coords[0, j]
-            y_val = transformed_coords[1, j]
-            if ((x_val >= 0) and (x_val < cols)) and ((y_val >= 0) and (y_val < rows)):
-                background_img[y_val][x_val] = img[math.floor(j/cols), j%cols, i]
-        # fn ends here
-        if (i == 0):
-            fullImg = np.array(background_img)
-        else:
-            fullImg = np.dstack((fullImg, background_img))
+    # fn transformed_coords, img, rows, cols, background_img --> background_img
+    # map each pixel in layer of img to background img corresponding to transformed_coords
+    map_pixels(ctypes.c_void_p(transformed_coords[0].ctypes.data), ctypes.c_void_p(transformed_coords[1].ctypes.data),
+                ctypes.c_void_p(img.ctypes.data), ctypes.c_void_p(background_img.ctypes.data),
+                ctypes.c_int(rows), ctypes.c_int(cols))
 
-    return fullImg
+    return background_img;
 
-idMatrix = np.array([[1, -2], [0,1]])
-img2 = transform_image(img, idMatrix).astype('uint8')
+idMatrix = np.array([[1, 0], [0,1]])
+img2 = transform_image(img, idMatrix)
 
 
 
 plt.imshow(img2,  extent=[-cols/2., cols/2., -rows/2., rows/2. ])
 plt.show()
 print("done")
-
-# cv2.imshow('image',img)
-# cv2.waitKey(0)
-
-
-
-
