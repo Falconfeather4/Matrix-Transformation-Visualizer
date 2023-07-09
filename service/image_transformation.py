@@ -49,11 +49,10 @@ def transform_image(img, matrix):
 
     return background_img;
 
-idMatrix = np.array([[1, 0], [0,1]])
-img2 = transform_image(img, idMatrix)
-
-
-
-plt.imshow(img2,  extent=[-cols/2., cols/2., -rows/2., rows/2. ])
-plt.show()
-print("done")
+# idMatrix = np.array([[1, 1], [0,1]])
+# img2 = transform_image(img, idMatrix)
+#
+#
+#
+# plt.imshow(img2,  extent=[-cols/2., cols/2., -rows/2., rows/2. ])
+# plt.show()
