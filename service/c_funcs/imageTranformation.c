@@ -42,4 +42,6 @@ void map_pixels(void *coordxv, void *coordyv, void *imgv, void *bgv, int rows, i
             bg[3*position + 2] = img[3*i + 2];
         }
     }
+
+    
 }

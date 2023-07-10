@@ -1,20 +1,13 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import cv2
 import ctypes
 
-img = cv2.imread('ubc_logo.jpg')
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-rows, cols, layers = img.shape
-
 # linking map_pixels function from c
-lib = ctypes.cdll.LoadLibrary('imageTranformation.so')
+lib = ctypes.cdll.LoadLibrary('c_funcs/imageTranformation.so')
 map_pixels = lib.map_pixels
 
 
 # takes in an image and a 2x2 transformation matrix, applies the
 #transformation, and returns the transformed image
-
 def transform_image(img, matrix):
     rows, cols, layers = img.shape
     # creates white background image
@@ -49,10 +42,3 @@ def transform_image(img, matrix):
 
     return background_img;
 
-# idMatrix = np.array([[1, 1], [0,1]])
-# img2 = transform_image(img, idMatrix)
-#
-#
-#
-# plt.imshow(img2,  extent=[-cols/2., cols/2., -rows/2., rows/2. ])
-# plt.show()
