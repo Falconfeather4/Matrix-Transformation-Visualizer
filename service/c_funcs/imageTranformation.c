@@ -21,9 +21,13 @@ void map_pixels(void *coordxv, void *coordyv, void *imgv, void *bgv, int rows, i
 
 void draw_line(image img, point start, int length, int thickness, char direction, colour c);
 void draw_point(image img, point p, colour c);
+
 void draw_axis(void *imgv, int rows, int cols);
 void draw_x_ticks(image img, point center, int tick_spacing, colour colour);
 void draw_y_ticks(image img, point center, int tick_spacing, colour colour);
+
+void draw_i_j_hat(void *imgv, int rows, int cols);
+void draw_arrow(image img, point p, char direction, colour c, int length, int thickness);
 
 
 
@@ -77,7 +81,6 @@ void map_pixels(void *coordxv, void *coordyv, void *imgv, void *bgv, int rows, i
 // given an image, start point, length of line in pixels, thickness in pixels, direction, and c in rgb, draws
 // a straight line onto given image
 void draw_line(image img, point start, int length, int thickness, char direction, colour c) {
-    int start_index = (start.y * img.cols) + start.x;
     switch (direction) {
         case 'n':
             for (int i = 0; i < length; i ++) {
@@ -187,9 +190,9 @@ void draw_axis(void *imgv, int rows, int cols) {
     middle_row_west.y = middle_row;
 
     // highest point on drawn y-axis
-    point middle_col_up;
-    middle_col_up.x = middle_col;
-    middle_col_up.y = 0;
+    point middle_col_north;
+    middle_col_north.x = middle_col;
+    middle_col_north.y = 0;
 
     colour black;
     black.r = 0;
@@ -200,10 +203,19 @@ void draw_axis(void *imgv, int rows, int cols) {
     draw_line(img, middle_row_west, cols, 3, 'e', black);
 
     // draw y-axis
-    draw_line(img, middle_col_up, rows, 3, 's', black);
+    draw_line(img, middle_col_north, rows, 3, 's', black);
 
+    // draw ticks
     draw_x_ticks(img, center, 100, black);
     draw_y_ticks(img, center, 100, black);
+
+    // draw arrows
+    point middle_row_east;
+    middle_row_east.x = cols;
+    middle_row_east.y = middle_row;
+    draw_arrow(img, middle_row_east, 'e', black, 10, 6);
+
+    draw_arrow(img, middle_col_north, 'n', black, 10, 6);
 }
 
 
@@ -248,6 +260,173 @@ void draw_y_ticks(image img, point center, int tick_spacing, colour colour) {
         // draw lower ticks (below y-axis)
         draw_line(img, tick_center_index_neg, 9, 4, 'e', colour);
         draw_line(img, tick_center_index_neg, 9, 4, 'w', colour);
+    }
+}
+
+
+void draw_i_j_hat(void *imgv, int rows, int cols) {
+    int arrow_length = 100;
+    image img;
+    img.pointer = (u_int8_t *) imgv;
+    img.rows = rows;
+    img.cols = cols;
+
+    point center;
+    center.x = (int) cols / 2;
+    center.y = (int) rows / 2;
+
+    colour green;
+    green.r = 0;
+    green.g = 255;
+    green.b = 0;
+
+    colour red;
+    red.r = 255;
+    red.g = 0;
+    red.b = 0;
+
+    // draw i hat
+    draw_line(img, center, arrow_length, 3, 'e', green);
+    point arrow_center_i;
+    arrow_center_i.x = center.x + arrow_length;
+    arrow_center_i.y = center.y;
+    draw_arrow(img, arrow_center_i, 'e', green, 7, 4);
+
+    // draw j hat
+    draw_line(img, center, arrow_length, 3, 'n', red);
+    point arrow_center_j;
+    arrow_center_j.x = center.x;
+    arrow_center_j.y = center.y - arrow_length;
+    draw_arrow(img, arrow_center_j, 'n', red, 7, 4);
+}
+
+
+void draw_arrow(image img, point p, char direction, colour c, int length, int thickness) {
+    switch (direction) {
+        case 'n':
+            for (int i = 0; i < length; i++) {
+                for (int j = 0; j < thickness; j ++) {
+                    if (j % 2) {
+                        int offset = j - (j - 1)/2;
+                        point left;
+                        left.x = p.x - i - offset;
+                        left.y = p.y + i;
+
+                        point right;
+                        right.x = p.x + i + offset;
+                        right.y = p.y + i;
+
+                        draw_point(img, left, c);
+                        draw_point(img, right, c);
+                    } else {
+                        int offset = j - j / 2;
+                        point left;
+                        left.x = p.x - i - offset;
+                        left.y = p.y + i;
+
+                        point right;
+                        right.x = p.x + i + offset;
+                        right.y = p.y + i;
+
+                        draw_point(img, left, c);
+                        draw_point(img, right, c);
+                    }
+                }
+            }
+            break;
+        case 's':
+            for (int i = 0; i < length; i++) {
+                for (int j = 0; j < thickness; j ++) {
+                    if (j % 2) {
+                        int offset = j - (j - 1)/2;
+                        point left;
+                        left.x = p.x - i - offset;
+                        left.y = p.y - i;
+
+                        point right;
+                        right.x = p.x + i + offset;
+                        right.y = p.y - i;
+
+                        draw_point(img, left, c);
+                        draw_point(img, right, c);
+                    } else {
+                        int offset = j - j / 2;
+                        point left;
+                        left.x = p.x - i - offset;
+                        left.y = p.y - i;
+
+                        point right;
+                        right.x = p.x + i + offset;
+                        right.y = p.y - i;
+
+                        draw_point(img, left, c);
+                        draw_point(img, right, c);
+                    }
+                }
+            }
+            break;
+        case 'e':
+            for (int i = 0; i < length; i++) {
+                for (int j = 0; j < thickness; j ++) {
+                    if (j % 2) {
+                        int offset = j - (j - 1)/2;
+                        point top;
+                        top.x = p.x - i;
+                        top.y = p.y - i - offset;
+
+                        point bottom;
+                        bottom.x = p.x - i;
+                        bottom.y = p.y + i + offset;
+
+                        draw_point(img, top, c);
+                        draw_point(img, bottom, c);
+                    } else {
+                        int offset = j - j / 2;
+                        point top;
+                        top.x = p.x - i;
+                        top.y = p.y - i - offset;
+
+                        point bottom;
+                        bottom.x = p.x - i;
+                        bottom.y = p.y + i + offset;
+
+                        draw_point(img, top, c);
+                        draw_point(img, bottom, c);
+                    }
+                }
+            }
+            break;
+        case 'w':
+            for (int i = 0; i < length; i++) {
+                for (int j = 0; j < thickness; j ++) {
+                    if (j % 2) {
+                        int offset = j - (j - 1)/2;
+                        point top;
+                        top.x = p.x + i;
+                        top.y = p.y - i - offset;
+
+                        point bottom;
+                        bottom.x = p.x + i;
+                        bottom.y = p.y + i + offset;
+
+                        draw_point(img, top, c);
+                        draw_point(img, bottom, c);
+                    } else {
+                        int offset = j - j / 2;
+                        point top;
+                        top.x = p.x + i;
+                        top.y = p.y - i - offset;
+
+                        point bottom;
+                        bottom.x = p.x + i;
+                        bottom.y = p.y + i + offset;
+
+                        draw_point(img, top, c);
+                        draw_point(img, bottom, c);
+                    }
+                }
+            }
+            break;
     }
 }
 

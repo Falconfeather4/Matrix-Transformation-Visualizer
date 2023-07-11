@@ -7,6 +7,7 @@ import ctypes
 lib = ctypes.cdll.LoadLibrary('c_funcs/imageTranformation.so')
 map_pixels = lib.map_pixels
 draw_axis = lib.draw_axis
+draw_i_j_hat = lib.draw_i_j_hat
 
 
 # takes in an image and a 2x2 transformation matrix, applies the
@@ -47,16 +48,18 @@ def transform_image(img, matrix):
 
 
 img = cv2.imread('images/ubc_logo.jpg')
-# img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 rows, cols, layers = np.shape(img)
 
 blank = np.full((rows, cols, layers), 255).astype('uint8')
+# blank = cv2.cvtColor(blank, cv2.COLOR_BGR2RGB)
 
 def draw():
     draw_axis(ctypes.c_void_p(img.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols))
-
+    draw_i_j_hat(ctypes.c_void_p(img.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols))
 
 draw()
+blank = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
 cv2.imshow('image', img)
 cv2.waitKey(0)
