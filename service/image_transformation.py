@@ -1,13 +1,16 @@
 import cv2
 import numpy as np
 import ctypes
+import config
 
 
-# linking map_pixels function from c
+# linking functions from c
 lib = ctypes.cdll.LoadLibrary('c_funcs/imageTranformation.so')
 map_pixels = lib.map_pixels
 draw_axis = lib.draw_axis
 draw_i_j_hat = lib.draw_i_j_hat
+draw_grid_lines = lib.draw_grid_lines
+draw_eigenvectors = lib.draw_eigenvectors
 
 
 # takes in an image and a 2x2 transformation matrix, applies the
@@ -55,11 +58,19 @@ blank = np.full((rows, cols, layers), 255).astype('uint8')
 # blank = cv2.cvtColor(blank, cv2.COLOR_BGR2RGB)
 
 def draw():
-    draw_axis(ctypes.c_void_p(img.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols))
-    draw_i_j_hat(ctypes.c_void_p(img.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols))
+    # draw_grid_lines(ctypes.c_void_p(blank.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols), ctypes.c_int(config.unit_length))
+    # draw_axis(ctypes.c_void_p(blank.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
+    #           ctypes.c_int(config.unit_length))
+    # draw_i_j_hat(ctypes.c_void_p(blank.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
+    #              ctypes.c_int(config.unit_length))
+    draw_eigenvectors(ctypes.c_void_p(blank.ctypes.data),  ctypes.c_int(rows), ctypes.c_int(cols),
+                      ctypes.c_float(1.49))
+    draw_eigenvectors(ctypes.c_void_p(blank.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
+                      ctypes.c_float(2), ctypes.c_int(1))
 
 draw()
-blank = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+blank = cv2.cvtColor(blank, cv2.COLOR_RGB2BGR)
+img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
-cv2.imshow('image', img)
+cv2.imshow('image', blank)
 cv2.waitKey(0)

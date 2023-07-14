@@ -1,11 +1,21 @@
 import image_transformation
 import cv2
 import config
+import numpy as np
+from numpy import linalg as LA
 
-img = cv2.imread(config.image_path)
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+# matrix:
+# | 1 2 |
+# | 0 3 |
 
-img = image_transformation.draw_axis()
+#eigens: <1, 0> --> 1
+#        <1, 1> --> 3
 
 
-# resizing img
+matrix = np.array([[1, 2], [0, 3]])
+value, vector = LA.eig(matrix);
+
+
+
+# print(vector)
+# print(value)

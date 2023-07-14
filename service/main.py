@@ -6,6 +6,7 @@ from ui import *
 import config
 
 # starts the program
+config.sync_global_vars()
 start()
 
 # loads img from path stored in config
