@@ -40,38 +40,6 @@ int has_same_colour(image img, point p, colour c);
 colour * get_colour_at_point(image img, point p);
 
 
-
-// main is purely for testing purposes
-int main() {
-//    // test map_pixels()
-//    int coordx[] = {2, 1, 0, 2, 1, 0};
-//    int coordy[] = {1, 1, 1, 0, 0, 0};
-    u_int8_t img[] = { 11, 12, 13, 21, 22, 23,31, 32, 33, 41, 42,
-                       43,51, 52, 53, 61, 62, 63};
-//    u_int8_t bg[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-//                     0, 0, 0, 0, 0, 0};
-//    for (int i = 0; i < 18; i++) {
-//        printf("%d,", bg[i]);
-//    }
-//    printf("\n");
-//
-//    map_pixels(coordx, coordy, img, bg, 2, 3);
-//
-//    for (int i = 0; i < 18; i++) {
-//        printf("%d,", bg[i]);
-//    }
-//    printf("\n");
-//
-
-    // test draw_axis()
-
-    draw_eigenvectors(img, 2, 3, 1, 1);
-
-
-
-    return 0;
-}
-
 // map each pixel in layer of img to background img corresponding to transformed_coords
 void map_pixels(void *coordxv, void *coordyv, void *imgv, void *bgv, int rows, int cols) {
     int * coordx = (int *) coordxv;
@@ -277,6 +245,7 @@ void draw_y_ticks(image img, point center, int tick_spacing, int tick_length, in
 }
 
 
+// draws ihat and jhat
 void draw_i_j_hat(void *imgv, int rows, int cols, int unit_len) {
     image img;
     img.pointer = (u_int8_t *) imgv;
@@ -443,6 +412,7 @@ void draw_arrow(image img, point p, char direction, colour c, int length, int th
 }
 
 
+// draws grid lines
 void draw_grid_lines(void *imgv, int rows, int cols, int unit_len) {
     image img;
     img.pointer = (u_int8_t *) imgv;

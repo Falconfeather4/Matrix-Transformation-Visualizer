@@ -96,15 +96,12 @@ def do_transformations(img, matrix):
 def draw_determinant(img, rows, cols):
     overlay = img.copy()
 
-    # Rectangle parameters
     x, y, width, height = int(cols/2), int(rows/2), config.unit_length, config.unit_length
-    # A filled rectangle
+    # A filled square
     cv2.rectangle(overlay, (x, y), (x + config.unit_length, y - config.unit_length), (255, 255, 0), -1)
 
-    alpha = 0.4  # Transparency factor.
+    alpha = 0.4
 
-    # Following line overlays transparent rectangle
-    # over the image
     image_new = cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0)
     return image_new
 

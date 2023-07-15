@@ -27,7 +27,7 @@ def start():
     while True:
         matrix = input("Please enter a 2x2 transformation matrix. Enter numbers by column vectors from left to right, "
                        "seperated by commas. "
-                       "For example, \n |1 2| \n |3 4| \n should be entered as: 1,3,2,4. ")
+                       "For example, \n |1 2| \n |3 4| \n should be entered as: 1,3,2,4\n ")
         if re.match(r"^-?\d+(\.\d+)?,-?\d+(\.\d+)?,-?\d+(\.\d+)?,-?\d+(\.\d+)?$", matrix):
             tl, bl, tr, br = matrix.split(",")
             config.transformation_matrix = np.array([[float(tl), float(tr)], [float(bl), float(br)]])
