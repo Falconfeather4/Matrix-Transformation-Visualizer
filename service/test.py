@@ -47,7 +47,9 @@ def draw():
                     ctypes.c_int(cols))
 draw()
 
-
+# cv2.imshow('image', img)
+# # cv2.imshow('image', blank)
+# cv2.waitKey(0)
 
 
 

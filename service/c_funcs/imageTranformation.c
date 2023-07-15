@@ -564,55 +564,17 @@ void draw_eigenvectors(void *imgv, int rows, int cols, float slope, int undefine
 
 // overlays overlay img on top of bg img, ignoring white pixels
 void overlay_image(void *bgv, void *overlayv, int rows, int cols) {
-    image bg;
-    bg.pointer = (u_int8_t *) bgv;
-    bg.rows = rows;
-    bg.cols = cols;
+    u_int8_t * bg = (u_int8_t *) bgv;
+    u_int8_t * overlay = (u_int8_t *) overlayv;
 
-    image overlay;
-    overlay.pointer = (u_int8_t *) overlayv;
-    overlay.rows = rows;
-    overlay.cols = cols;
-
-    colour white;
-    white.r = 255;
-    white.g = 255;
-    white.b = 255;
-
-    for (int x = 0; x < cols; x++) {
-        for (int y = 0; y < rows; y++) {
-            point position;
-            position.x = x;
-            position.y = y;
-            if (!has_same_colour(overlay, position, white)) {
-                colour * point_colour = get_colour_at_point(overlay, position);
-                draw_point(bg, position, *point_colour);
-                free(point_colour);
-            }
+    for (int i = 0; i < rows * cols; i++) {
+        u_int8_t r = overlay[3 * i];
+        u_int8_t g = overlay[(3 * i) + 1];
+        u_int8_t b = overlay[(3 * i) + 2];
+        if (r != 255 || g != 255 || b != 255) {
+            bg[3 * i] = r;
+            bg[(3 * i) + 1] = g;
+            bg[(3 * i) + 2] = b;
         }
     }
-}
-
-
-// determines if the point on an image is a given colour
-int has_same_colour(image img, point p, colour c) {
-    colour * point_colour = get_colour_at_point(img, p);
-    int same_colour = point_colour->r == c.r && point_colour->g == c.g && point_colour->b == c.b;
-    free(point_colour);
-
-    return same_colour;
-}
-
-// returns a pointer to the colour at a given point on an image
-colour * get_colour_at_point(image img, point p) {
-    int point_index = (3 * p.y * img.cols) + (3 * p.x);
-
-    colour * point_colour;
-    point_colour = (colour *) malloc(sizeof(colour));
-
-    point_colour->r = img.pointer[point_index];
-    point_colour->g = img.pointer[point_index + 1];
-    point_colour->b = img.pointer[point_index + 2];
-
-    return point_colour;
 }
