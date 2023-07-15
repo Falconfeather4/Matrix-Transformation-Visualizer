@@ -27,17 +27,18 @@ rows, cols, layers = img.shape
 
 
 # creating matrices used in transformation
+frame_num = 70
 matrix = config.transformation_matrix
 identity_matrix = np.array([[1, 0], [0, 1]])
 delta_matrix = matrix - identity_matrix
-step_matrix = 0.01 * delta_matrix;
+step_matrix = 1 / frame_num * delta_matrix;
 
 
 # creating frames used in animation
 frames = []
-for i in range(100):
+for i in range(frame_num):
     transf_matrix = identity_matrix + i * step_matrix
-    transformed_img = image_transformation.transform_image(img, transf_matrix)
+    transformed_img = image_transformation.do_transformations(img, transf_matrix)
     frames.append(transformed_img)
 
 
@@ -51,7 +52,7 @@ running = True
 
 # display animation
 while running:
-    clock.tick(25)
+    clock.tick(20)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False

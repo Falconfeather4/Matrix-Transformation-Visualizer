@@ -34,22 +34,57 @@ draw_grid_lines_c = lib.draw_grid_lines
 draw_eigenvectors_c = lib.draw_eigenvectors
 overlay_image_c = lib.overlay_image
 
+# draws the determinant onto the image
+def draw_determinant(img, rows, cols):
+    overlay = img.copy()
+
+    # Rectangle parameters
+    x, y, width, height = int(cols/2), int(rows/2) + config.unit_length, config.unit_length, config.unit_length
+    # A filled rectangle
+    cv2.rectangle(overlay, (x, y), (2, 2), (0, 255, 255), -1)
+
+    #
+    # alpha = 0.4  # Transparency factor.
+    #
+    # # Following line overlays transparent rectangle
+    # # over the image
+    # image_new = cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0)
+
 img = cv2.imread('images/ubc_logo.jpg')
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 rows, cols, layers = np.shape(img)
 blank = np.full((rows, cols, layers), 255).astype('uint8')
 
-draw_i_j_hat_c(ctypes.c_void_p(blank.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
-                       ctypes.c_int(config.unit_length))
+draw_determinant(blank, rows, cols)
 
-def draw():
-    overlay_image_c(ctypes.c_void_p(img.ctypes.data), ctypes.c_void_p(blank.ctypes.data), ctypes.c_int(rows),
-                    ctypes.c_int(cols))
-draw()
 
 # cv2.imshow('image', img)
-# # cv2.imshow('image', blank)
+# cv2.imshow('image', blank)
 # cv2.waitKey(0)
+
+
+
+def test():
+    image = cv2.imread('images/ubc_logo.jpg')
+    overlay = image.copy()
+
+    # Rectangle parameters
+    x, y, w, h = 10, 10, 300, 300
+    # A filled rectangle
+    cv2.rectangle(overlay, (x, y), (x + w, y + h), (0, 200, 0), -1)
+
+    alpha = 0.4  # Transparency factor.
+
+    # Following line overlays transparent rectangle
+    # over the image
+    image_new = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0)
+
+    # cv2.imshow("some", image_new)
+    # cv2.waitKey(0)
+    #
+    # cv2.destroyAllWindows()
+
+test()
 
 
 

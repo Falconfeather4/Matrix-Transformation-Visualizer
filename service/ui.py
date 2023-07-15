@@ -6,8 +6,9 @@ import re
 
 def start():
     # instructions for submitting image
-    print("Welcome to the Linear Transformation visualizer. To begin, please add your image files "
-          "to the images folder, or use the provided image by typing \'ubc_logo.jpg\'.")
+    print("Welcome to the Linear Transformation visualizer. To edit the display settings, please directly modify"
+          " the config.py file. To begin, please add your image files to the images folder, or use the provided"
+          "image by typing \'ubc_logo.jpg\'.")
 
     # get image path from user
     while True:
@@ -35,24 +36,15 @@ def start():
             print("Invalid input, please try again.")
 
     # set display
-    text = "The display settings are currently:\nAxis: {ax}\nGrid lines: {gl}\nEigenvectors: {ev}"
+    text = "The display settings are currently:\nAxis: {ax}\nGrid lines: {gl}\nEigenvectors: {ev}\n" \
+           "Determinant: {det}\ni-hat and j-hat: {ij}\n"
     print(text.format(
           ax="On" if config.axis else "Off",
           gl="On" if config.grid_lines else "Off",
-          ev="On" if config.eigenvectors else "Off"))
-    print("Please enter your display settings or \"s\" to skip. 1 is on and 0 is off. Enter the three settings without "
-          "spaces. For examples, on, on, off, will be 110.")
-    while True:
-        usr_input = input("New display setting: ")
-        if usr_input == "s":
-            break
-        elif re.match("^[01][01][01]$", usr_input):
-            config.axis = True if usr_input == "1" else False
-            config.grid_lines = True if usr_input == "1" else False
-            config.eigenvectors = True if usr_input == "1" else False
-            break
-        else:
-            print("Invalid input, please try again.")
+          ev="On" if config.eigenvectors else "Off",
+          det="On" if config.determinant else "Off",
+          ij= "On" if config.i_j_hat else "Off"))
+
 
 
 

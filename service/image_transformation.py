@@ -12,6 +12,7 @@ draw_axis_c = lib.draw_axis
 draw_i_j_hat_c = lib.draw_i_j_hat
 draw_grid_lines_c = lib.draw_grid_lines
 draw_eigenvectors_c = lib.draw_eigenvectors
+overlay_image_c = lib.overlay_image
 
 
 # takes in an image and a 2x2 transformation matrix, applies the
@@ -52,41 +53,60 @@ def transform_image(img, matrix):
 
 
 # given image, adds advanced features based on settings in config.py
-def draw_advanced_features(img):
-    rows, cols, layers = img.shape
+def do_transformations(img, matrix):
+    image = np.copy(img)
+    rows, cols, layers = image.shape
 
     if config.grid_lines:
-        draw_grid_lines_c(ctypes.c_void_p(img.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
+        draw_grid_lines_c(ctypes.c_void_p(image.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
                           ctypes.c_int(config.unit_length))
-    if config.i_j_hat:
-        draw_i_j_hat_c(ctypes.c_void_p(img.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
-                       ctypes.c_int(config.unit_length))
     if config.determinant:
-        draw_determinant(img, rows, cols)
+        image = draw_determinant(image, rows, cols)
     if config.eigenvectors:
-        draw_eigenvectors(img, rows, cols)
+        draw_eigenvectors(image, rows, cols)
+
+    # if axis are off but i_j_hats are on:
+    if (not config.axis) and config.i_j_hat:
+        draw_i_j_hat_c(ctypes.c_void_p(image.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
+                       ctypes.c_int(config.unit_length))
+
+    image = transform_image(image, matrix)
+
+    # if axis are on, draw them after transformation. If i_j_hats are also on, then they must be
+    # separately transformed and then overlayed onto original image, since ij hats must appear
+    # in front of the axis
+    if config.axis:
+        draw_axis_c(ctypes.c_void_p(image.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
+                    ctypes.c_int(config.unit_length))
+        if config.i_j_hat:
+            blank = np.full((rows, cols, layers), 255).astype('uint8')
+            draw_i_j_hat_c(ctypes.c_void_p(blank.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
+                           ctypes.c_int(config.unit_length))
+            blank = transform_image(blank, matrix)
+            overlay_image_c(ctypes.c_void_p(image.ctypes.data), ctypes.c_void_p(blank.ctypes.data),
+                            ctypes.c_int(rows), ctypes.c_int(cols))
+
+    return image
 
 
-  #add this in later
-# if config.axis:
-#     draw_axis_c(ctypes.c_void_p(img.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
-#                 ctypes.c_int(config.unit_length))
+
 
 
 # draws the determinant onto the image
 def draw_determinant(img, rows, cols):
-    overlay = img.copy
+    overlay = img.copy()
 
     # Rectangle parameters
-    x, y, width, height = cols/2, rows/2 + config.unit_length, config.unit_length, config.unit_length
+    x, y, width, height = int(cols/2), int(rows/2), config.unit_length, config.unit_length
     # A filled rectangle
-    cv2.rectangle(overlay, (x, y), (x + width, y + height), (0, 255, 255), -1)
+    cv2.rectangle(overlay, (x, y), (x + config.unit_length, y - config.unit_length), (255, 255, 0), -1)
 
     alpha = 0.4  # Transparency factor.
 
     # Following line overlays transparent rectangle
     # over the image
     image_new = cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0)
+    return image_new
 
 
 # draws the eigenvectors onto the image
@@ -102,7 +122,7 @@ def draw_eigenvectors(img, rows, cols):
 
     # making sure slope exists for first vector
     if not(isinstance(value1_x, complex) or isinstance(value1_y, complex)):
-        if value2_x != 0:
+        if value1_x != 0:
             slope = value1_y / value1_x
             draw_eigenvectors_c(ctypes.c_void_p(img.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
             ctypes.c_float(float(slope)), 0)
