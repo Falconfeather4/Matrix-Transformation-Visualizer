@@ -8,6 +8,7 @@ from pygame_gui.elements import UIDropDownMenu
 from pygame_gui.elements import UILabel
 from pygame_gui.elements import UITextEntryLine
 
+
 # resizes img
 def resize_image(img, size):
     rows, cols, layers = img.shape
@@ -29,72 +30,57 @@ def calculate_step_matrix():
     matrix = config.transformation_matrix
     delta_matrix = matrix - identity_matrix
     step_matrix = 1 / frame_num * delta_matrix;
-
     return step_matrix
 
-
-
-
-
-img = config.image_root_path + config.image_names[0]
-rows = 0
-cols = 0
-layers = 0
 
 # initializing pygame
 pygame.init()
 pygame.display.set_caption('Linear Transformations')
 window = pygame.display.set_mode((1100, 800))
-
 clock = pygame.time.Clock()
-
 manager = pygame_gui.UIManager((1100, 800))
 
 play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((775, 700), (100, 50)),
-                                           text='Play',
-                                           manager=manager)
+                                           text='Play', manager=manager)
 image_dropdown = UIDropDownMenu(options_list=config.image_names, starting_option=config.image_names[0],
                                 relative_rect=pygame.Rect(50, 50, 400, 50),
                                 manager=manager, expansion_height_limit=100)
 
+matrix_label = UILabel(text="Transformation Matrix:", relative_rect=pygame.Rect((50, 220), (200, 50), manager=manager))
+top_left_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(300, 210, 50, 40),
+                                        initial_text=str(config.transformation_matrix[0][0]))
+top_right_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(355, 210, 50, 40),
+                                         initial_text=str(config.transformation_matrix[0][1]))
+bottom_left_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(300, 255, 50, 40),
+                                           initial_text=str(config.transformation_matrix[1][0]))
+bottom_right_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(355, 255, 50, 40),
+                                            initial_text=str(config.transformation_matrix[1][1]))
 
-matrix_label = UILabel(text="Transformation Matrix:", relative_rect=pygame.Rect((50, 220), (200, 50),
-                       manager=manager))
-top_left_matrix_input = UITextEntryLine(relative_rect=pygame.Rect((300, 210), (50, 40)))
-top_right_matrix_input = UITextEntryLine(relative_rect=pygame.Rect((355, 210), (50, 40)))
-bottom_left_matrix_input = UITextEntryLine(relative_rect=pygame.Rect((300, 255), (50, 40)))
-bottom_right_matrix_input = UITextEntryLine(relative_rect=pygame.Rect((355, 255), (50, 40)))
-
-
-unit_length_lable = UILabel(text="Unit Length:", relative_rect=pygame.Rect((50, 350), (100, 40)),manager=manager)
-unit_length_input = UITextEntryLine(relative_rect=pygame.Rect((170, 350), (50, 40)))
-
+unit_length_lable = UILabel(text="Unit Length:", relative_rect=pygame.Rect((50, 350), (100, 40)), manager=manager)
+unit_length_input = UITextEntryLine(relative_rect=pygame.Rect(170, 350, 50, 40), initial_text=str(config.unit_length))
 
 axis_label = UILabel(text="Axis:", relative_rect=pygame.Rect((50, 460), (100, 40)), manager=manager)
 eigenvector_label = UILabel(text="Eigenvectors:", relative_rect=pygame.Rect((50, 520), (110, 40)), manager=manager)
-grid_lines_label = UILabel(text="Grid Lines:", relative_rect=pygame.Rect((50, 580), (100, 40)) ,manager=manager)
+grid_lines_label = UILabel(text="Grid Lines:", relative_rect=pygame.Rect((50, 580), (100, 40)), manager=manager)
 i_j_hat_label = UILabel(text="i-j hat:", relative_rect=pygame.Rect((50, 640), (100, 40)), manager=manager)
 determinant_label = UILabel(text="Determinant:", relative_rect=pygame.Rect((50, 700), (100, 40)), manager=manager)
 
-
 yes_no_options = ["yes", "no"]
 axis_dropdown = UIDropDownMenu(options_list=yes_no_options, starting_option="yes",
-                                relative_rect=pygame.Rect(170, 460, 280, 40),
-                                manager=manager, expansion_height_limit=100)
+                               relative_rect=pygame.Rect(170, 460, 280, 40),
+                               manager=manager, expansion_height_limit=100)
 eigenvector_dropdown = UIDropDownMenu(options_list=yes_no_options, starting_option="yes",
-                                relative_rect=pygame.Rect(170, 520, 280, 40),
-                                manager=manager, expansion_height_limit=100)
+                                      relative_rect=pygame.Rect(170, 520, 280, 40),
+                                      manager=manager, expansion_height_limit=100)
 grid_lines_dropdown = UIDropDownMenu(options_list=yes_no_options, starting_option="yes",
-                                relative_rect=pygame.Rect(170, 580, 280, 40),
-                                manager=manager, expansion_height_limit=100)
+                                     relative_rect=pygame.Rect(170, 580, 280, 40),
+                                     manager=manager, expansion_height_limit=100)
 i_j_hat_dropdown = UIDropDownMenu(options_list=yes_no_options, starting_option="yes",
-                                relative_rect=pygame.Rect(170, 640, 280, 40),
-                                manager=manager, expansion_height_limit=100)
+                                  relative_rect=pygame.Rect(170, 640, 280, 40),
+                                  manager=manager, expansion_height_limit=100)
 determinant_dropdown = UIDropDownMenu(options_list=yes_no_options, starting_option="yes",
                                       relative_rect=pygame.Rect(170, 700, 280, 40),
                                       manager=manager, expansion_height_limit=100)
-
-
 
 index = 0
 running = True
@@ -116,12 +102,10 @@ while running:
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img = resize_image(img, 600)
 
-                tl_matrix_input = float(top_left_matrix_input.get_text())
-                tr_matrix_input = float(top_right_matrix_input.get_text())
-                bl_matrix_input = float(bottom_left_matrix_input.get_text())
-                br_matrix_input = float(bottom_right_matrix_input.get_text())
-                config.transformation_matrix = np.array([[tl_matrix_input, tr_matrix_input],
-                                                        [bl_matrix_input, br_matrix_input]])
+                config.transformation_matrix = np.array([[float(top_left_matrix_input.get_text()),
+                                                          float(top_right_matrix_input.get_text())],
+                                                         [float(bottom_left_matrix_input.get_text()),
+                                                          float(bottom_right_matrix_input.get_text())]])
 
                 config.unit_length = int(unit_length_input.get_text())
 
@@ -131,7 +115,6 @@ while running:
                 config.i_j_hat = True if grid_lines_dropdown.selected_option == "yes" else False
                 config.determinant = True if determinant_dropdown.selected_option == "yes" else False
 
-
         manager.process_events(event)
 
     if playing:
@@ -140,8 +123,7 @@ while running:
             playing = False
             continue
 
-        step_matrix = calculate_step_matrix()
-        transf_matrix = identity_matrix + index * step_matrix
+        transf_matrix = identity_matrix + index * calculate_step_matrix()
         transformed_img = image_transformation.do_transformations(img, transf_matrix)
 
         display_img = cv2.transpose(transformed_img)
