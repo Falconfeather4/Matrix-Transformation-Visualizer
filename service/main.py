@@ -122,6 +122,15 @@ while running:
         manager.process_events(event)
 
     if preview:
+        tl = top_left_matrix_input.get_text()
+        tr = top_right_matrix_input.get_text()
+        bl = bottom_left_matrix_input.get_text()
+        br = bottom_right_matrix_input.get_text()
+        config.transformation_matrix = np.array([[float(tl) if not (tl == "" or tl == "-") else 1.0,
+                                                  float(tr) if not (tr == "" or tr == "-") else 1.0],
+                                                 [float(bl) if not (bl == "" or bl == "-") else 1.0,
+                                                  float(br) if not (br == "" or br == "-") else 1.0]])
+
         config.unit_length = int(unit_length_input.get_text()) \
             if not (unit_length_input.get_text() == "" or int(unit_length_input.get_text()) < 10) else 10
 
@@ -135,6 +144,10 @@ while running:
         preview_img = cv2.cvtColor(preview_img, cv2.COLOR_BGR2RGB)
         preview_img = resize_image(preview_img, 600)
         preview_img = image_transformation.do_transformations(preview_img, identity_matrix)
+
+        if config.eigenvectors:
+            rows, cols, layers = preview_img.shape
+            image_transformation.draw_eigenvectors(preview_img, rows, cols)
         preview_img = cv2.transpose(preview_img)
         pygame_surface = pygame.surfarray.make_surface(preview_img)
 

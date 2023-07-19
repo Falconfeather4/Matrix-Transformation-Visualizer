@@ -10,7 +10,7 @@ determinant = True
 
 unit_length = 80
 
-transformation_matrix = np.array([[1, 0.5], [-0.5, 1]])
+transformation_matrix = np.array([[1, 0.5], [-0.5, -1]])
 image_names = ["ubc_logo.jpg", "bunny.jpg"]
 image_root_path = "images/"
 
