@@ -85,6 +85,7 @@ determinant_dropdown = UIDropDownMenu(options_list=yes_no_options, starting_opti
 index = 0
 running = True
 playing = False
+preview = True
 
 last_display_surface = None
 # display animation
@@ -94,9 +95,12 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
+            preview = True
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == play_button:
                 playing = True
+                preview = False
 
                 img = cv2.imread(config.image_root_path + image_dropdown.selected_option)
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -112,10 +116,31 @@ while running:
                 config.axis = True if axis_dropdown.selected_option == "yes" else False
                 config.eigenvectors = True if eigenvector_dropdown.selected_option == "yes" else False
                 config.grid_lines = True if grid_lines_dropdown.selected_option == "yes" else False
-                config.i_j_hat = True if grid_lines_dropdown.selected_option == "yes" else False
+                config.i_j_hat = True if i_j_hat_dropdown.selected_option == "yes" else False
                 config.determinant = True if determinant_dropdown.selected_option == "yes" else False
 
         manager.process_events(event)
+
+    if preview:
+        config.unit_length = int(unit_length_input.get_text()) \
+            if not (unit_length_input.get_text() == "" or int(unit_length_input.get_text()) < 10) else 10
+
+        config.axis = True if axis_dropdown.selected_option == "yes" else False
+        config.eigenvectors = True if eigenvector_dropdown.selected_option == "yes" else False
+        config.grid_lines = True if grid_lines_dropdown.selected_option == "yes" else False
+        config.i_j_hat = True if i_j_hat_dropdown.selected_option == "yes" else False
+        config.determinant = True if determinant_dropdown.selected_option == "yes" else False
+
+        preview_img = img = cv2.imread(config.image_root_path + image_dropdown.selected_option)
+        preview_img = cv2.cvtColor(preview_img, cv2.COLOR_BGR2RGB)
+        preview_img = resize_image(preview_img, 600)
+        preview_img = image_transformation.do_transformations(preview_img, identity_matrix)
+        preview_img = cv2.transpose(preview_img)
+        pygame_surface = pygame.surfarray.make_surface(preview_img)
+
+        x = 600
+        y = 50
+        window.blit(pygame_surface, (x, y))
 
     if playing:
         if index >= frame_num:
