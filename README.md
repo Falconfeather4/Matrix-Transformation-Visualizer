@@ -8,7 +8,7 @@ Users can choose to display:
 - eigenvectors
 - grid lines
 
-### Adding Images
+## Adding Images
 Please add images into the /images folder.
 Any image type supported by OpenCV can be used:
 - Windows bitmap (bmp)
