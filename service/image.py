@@ -1,7 +1,7 @@
 import ctypes
 import cv2
 import numpy as np
-from numpy import linalg as LA
+from numpy import linalg
 
 
 # linking function from c
@@ -14,6 +14,7 @@ draw_eigenvectors_c = lib.draw_eigenvectors
 overlay_image_c = lib.overlay_image
 
 
+# And Image that contains an 3d np array representing rgb pixels
 class Image:
     img_root_path = "images/"
 
@@ -35,10 +36,10 @@ class Image:
         rows, cols, layers = self.image_array.shape
         if rows > max_size or cols > max_size:
             if rows > cols:
-                height = max_size;
+                height = max_size
                 width = int(height * (cols / rows))
             else:
-                width = max_size;
+                width = max_size
                 height = int(width * (cols / rows))
             self.image_array = cv2.resize(self.image_array, (width, height))
 
@@ -83,8 +84,8 @@ class Image:
         rows, cols, layers = image_copy.image_array.shape
 
         if options.grid_lines:
-            draw_grid_lines_c(ctypes.c_void_p(image_copy.image_array.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
-                              ctypes.c_int(options.unit_length))
+            draw_grid_lines_c(ctypes.c_void_p(image_copy.image_array.ctypes.data), ctypes.c_int(rows),
+                              ctypes.c_int(cols), ctypes.c_int(options.unit_length))
         if options.determinant:
             image_copy.draw_determinant(rows, cols, options)
         if options.eigenvectors:
@@ -98,8 +99,7 @@ class Image:
         image_copy.transform(matrix)
 
         # if axis are on, draw them after transformation. If i_j_hats are also on, then they must be
-        # separately transformed and then overlayed onto original image, since ij hats must appear
-        # in front of the axis
+        # separately transformed and then overlayed onto original image, since ij hats must appear in front of the axis
         if options.axis:
             draw_axis_c(ctypes.c_void_p(image_copy.image_array.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
                         ctypes.c_int(options.unit_length))
@@ -116,45 +116,34 @@ class Image:
     # draws the determinant onto the image
     def draw_determinant(self, rows, cols, options):
         overlay = self.clone()
-
         x, y, width, height = int(cols / 2), int(rows / 2), options.unit_length, options.unit_length
-        # A filled square
-        cv2.rectangle(overlay.image_array, (x, y), (x + options.unit_length, y - options.unit_length), (255, 255, 0), -1)
+        cv2.rectangle(overlay.image_array, (x, y), (x + options.unit_length, y - options.unit_length),
+                      (255, 255, 0), -1)
 
         alpha = 0.4
-
         image_new = Image("", cv2.addWeighted(overlay.image_array, alpha, self.image_array, 1 - alpha, 0))
         self.image_array = image_new.image_array
 
+    # draws eigenvectors onto image
     def draw_eigenvectors(self, rows, cols, options):
         matrix = options.transformation_matrix
-        value, vector = LA.eig(matrix);
+        value, vector = linalg.eig(matrix)
 
         value1_x = vector[0][0]
         value1_y = vector[1][0]
-
         value2_x = vector[0][1]
         value2_y = vector[1][1]
 
-        # making sure slope exists for first vector
-        if not (isinstance(value1_x, complex) or isinstance(value1_y, complex)):
-            if value1_x != 0:
-                slope = value1_y / value1_x
-                draw_eigenvectors_c(ctypes.c_void_p(self.image_array.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
-                                    ctypes.c_float(float(slope)), 0)
+        self.draw_eigenvector_if_not_complex(value1_x, value1_y, rows, cols)
+        self.draw_eigenvector_if_not_complex(value2_x, value2_y, rows, cols)
+
+    def draw_eigenvector_if_not_complex(self, val_x, val_y, rows, cols):
+        if not (isinstance(val_x, complex) or isinstance(val_y, complex)):
+            if val_x != 0:
+                slope = val_y / val_x
+                draw_eigenvectors_c(ctypes.c_void_p(self.image_array.ctypes.data),
+                                    ctypes.c_int(rows), ctypes.c_int(cols), ctypes.c_float(float(slope)), 0)
             else:
                 # 0.1 is just a random float
-                draw_eigenvectors_c(ctypes.c_void_p(self.image_array.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
-                                    ctypes.c_float(0.1), 1)
-
-        # now for second vector
-        if not (isinstance(value2_x, complex) or isinstance(value2_y, complex)):
-            if value2_x != 0:
-                slope = value2_y / value2_x
-                draw_eigenvectors_c(ctypes.c_void_p(self.image_array.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
-                                    ctypes.c_float(float(slope)), 0)
-            else:
-                # 0.1 is just a random float
-                draw_eigenvectors_c(ctypes.c_void_p(self.image_array.ctypes.data), ctypes.c_int(rows), ctypes.c_int(cols),
-                                    ctypes.c_float(0.1), 1)
-
+                draw_eigenvectors_c(ctypes.c_void_p(self.image_array.ctypes.data),
+                                    ctypes.c_int(rows), ctypes.c_int(cols), ctypes.c_float(0.1), 1)

@@ -94,18 +94,10 @@ class AnimationManager:
 
         return self.last_display_img
 
-    # calculates the step matrix.
     # When the animation is playing, each frame is individually drawn with a different matrix. The first frame with be
-    # drawn with the identity matrix, and the last frame with the transformation_matrix. The "incrementing matrix" for
-    # each new frame is this step matrix, which is calculated by subtracting the identity_matrix from the
-    # transformation_matrix and then multiplying by (1 / number of frames). The matrix used in every frame is then
-    # calculated by (step_matrix * frame_index) + identity_matrix.
+    # drawn with the identity matrix, and the last frame with the transformation_matrix. The step_matrix is this
+    # "incrementing matrix" for each new frame
     def calculate_step_matrix(self):
         identity_matrix = np.array([[1, 0], [0, 1]])
-        matrix = self.options.transformation_matrix
-        delta_matrix = matrix - identity_matrix
+        delta_matrix = self.options.transformation_matrix - identity_matrix
         return (1 / self.frame_num) * delta_matrix
-
-
-
-

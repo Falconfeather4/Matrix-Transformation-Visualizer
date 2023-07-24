@@ -6,9 +6,7 @@ from pygame_gui.elements import UILabel
 from pygame_gui.elements import UITextEntryLine
 
 
-
 class Options:
-    # default options
     axis = True
     eigenvectors = True
     grid_lines = True
@@ -21,7 +19,6 @@ class Options:
     path = "./images"
     image_names = [f for f in listdir(path) if not f.startswith('.')]
     image = image_names[0]
-
 
 
 class OptionController:
@@ -45,7 +42,7 @@ class OptionController:
         self.bottom_right_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(355, 255, 50, 40),
                                                          initial_text=str(self.options.transformation_matrix[1][1]))
 
-        self.unit_length_lable = UILabel(text="Unit Length:", relative_rect=pygame.Rect((50, 350), (100, 40)),
+        self.unit_length_label = UILabel(text="Unit Length:", relative_rect=pygame.Rect((50, 350), (100, 40)),
                                          manager=manager)
         self.unit_length_input = UITextEntryLine(relative_rect=pygame.Rect(170, 350, 50, 40),
                                                  initial_text=str(self.options.unit_length))
@@ -53,7 +50,8 @@ class OptionController:
         self.axis_label = UILabel(text="Axis:", relative_rect=pygame.Rect((50, 460), (100, 40)), manager=manager)
         self.eigenvector_label = UILabel(text="Eigenvectors:", relative_rect=pygame.Rect((50, 520), (110, 40)),
                                          manager=manager)
-        self.grid_lines_label = UILabel(text="Grid Lines:", relative_rect=pygame.Rect((50, 580), (100, 40)), manager=manager)
+        self.grid_lines_label = UILabel(text="Grid Lines:", relative_rect=pygame.Rect((50, 580), (100, 40)),
+                                        manager=manager)
         self.i_j_hat_label = UILabel(text="i-j hat:", relative_rect=pygame.Rect((50, 640), (100, 40)), manager=manager)
         self.determinant_label = UILabel(text="Determinant:", relative_rect=pygame.Rect((50, 700), (100, 40)),
                                          manager=manager)
@@ -100,4 +98,3 @@ class OptionController:
     def get_options(self):
         self.update_options()
         return self.options
-
