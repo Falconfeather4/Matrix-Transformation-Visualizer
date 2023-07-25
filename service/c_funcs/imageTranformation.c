@@ -41,6 +41,8 @@ colour * get_colour_at_point(image img, point p);
 
 
 // map each pixel in layer of img to background img corresponding to transformed_coords
+// 3D python image arrays exist as 1D arrays in memory
+// structures are not used here to optimize speed
 void map_pixels(void *coordxv, void *coordyv, void *imgv, void *bgv, int rows, int cols) {
     int * coordx = (int *) coordxv;
     int * coordy = (int *) coordyv;
@@ -51,7 +53,10 @@ void map_pixels(void *coordxv, void *coordyv, void *imgv, void *bgv, int rows, i
         int y_val = coordy[i];
         int x_val = coordx[i];
         if ((x_val >= 0 && x_val < cols) && (y_val >= 0 && y_val < rows)) {
+            // position is the index of the pixel in a 1D array given the row and col of the pixel in a 2D array
             int position = (y_val * cols) + x_val;
+
+            // position, position + 1, and position + 2 are the r, g, b indexes of a pixel
             bg[3*position] = img[3*i];
             bg[3*position + 1] = img[3*i + 1];
             bg[3*position + 2] = img[3*i + 2];
@@ -64,16 +69,21 @@ void map_pixels(void *coordxv, void *coordyv, void *imgv, void *bgv, int rows, i
 // a straight line onto given image
 void draw_line(image img, point start, int length, int thickness, char direction, colour c) {
     switch (direction) {
+        // case north
         case 'n':
             for (int i = 0; i < length; i ++) {
                 for (int j = 0; j < thickness; j++) {
+                    // to create a thicker line, pixels are drawn alternatively on the left and right of the center of
+                    // the line
+                    // if j is odd, draw to the right, if j is even, draw to the left
                     if (j % 2) {
+                        // offset is the distance in pixels from the center of the line
                         int offset = j - (j - 1)/2;
                         point p;
                         p.x = start.x + offset;
                         p.y = start.y - i;
                         draw_point(img, p, c);
-                    }else {
+                    } else {
                         int offset = j - j / 2;
                         point p;
                         p.x = start.x - offset;
@@ -83,6 +93,7 @@ void draw_line(image img, point start, int length, int thickness, char direction
                 }
             }
             break;
+        // case south
         case 's':
             for (int i = 0; i < length; i ++) {
                 for (int j = 0; j < thickness; j++) {
@@ -102,6 +113,7 @@ void draw_line(image img, point start, int length, int thickness, char direction
                 }
             }
             break;
+        // case east
         case 'e':
             for (int i = 0; i < length; i ++) {
                 for (int j = 0; j < thickness; j++) {
@@ -121,6 +133,7 @@ void draw_line(image img, point start, int length, int thickness, char direction
                 }
             }
             break;
+        // case west
         case 'w':
             for (int i = 0; i < length; i ++) {
                 for (int j = 0; j < thickness; j++) {
@@ -245,7 +258,7 @@ void draw_y_ticks(image img, point center, int tick_spacing, int tick_length, in
 }
 
 
-// draws ihat and jhat
+// draws i-hat and j-hat
 void draw_i_j_hat(void *imgv, int rows, int cols, int unit_len) {
     image img;
     img.pointer = (u_int8_t *) imgv;
@@ -282,6 +295,7 @@ void draw_i_j_hat(void *imgv, int rows, int cols, int unit_len) {
 }
 
 
+// draws an arrowhead where the point of the arrow is 90 degrees
 void draw_arrow(image img, point p, char direction, colour c, int length, int thickness) {
     switch (direction) {
         case 'n':
@@ -452,8 +466,7 @@ void draw_grid_lines(void *imgv, int rows, int cols, int unit_len) {
 
 }
 
-// given an image and a slope, draws the eigenvectors. If the slope is undefined, undefined will be set to 1,
-// and a vertical line will be drawn
+// draws the eigenvectors from a slope. If the slope is undefined, a vertical line will be drawn
 void draw_eigenvectors(void *imgv, int rows, int cols, float slope, int undefined) {
     image img;
     img.pointer = (u_int8_t *) imgv;

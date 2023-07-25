@@ -22,8 +22,8 @@ play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((775, 700),
 running = True
 while running:
     window.fill(pygame.Color(128, 128, 128, 255))
-    time_delta = clock.tick(35) / 1000.0
-    options = option_panel.get_options()
+    new_options = option_panel.get_options()
+    time_delta = clock.tick(new_options.fps) / 1000.0
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -34,10 +34,8 @@ while running:
 
         manager.process_events(event)
 
-    new_options = option_panel.get_options()
     img = animation_manager.get_picture(new_options)
     display_img = cv2.transpose(img.image_array)
-
     pygame_surface = pygame.surfarray.make_surface(display_img)
 
     x = 600
@@ -47,6 +45,5 @@ while running:
     manager.update(time_delta)
     manager.draw_ui(window)
     pygame.display.update()
-
 
 pygame.quit()

@@ -4,13 +4,14 @@ from option_panel import Options
 import copy
 
 
+# maintains animation status
 class AnimationManager:
     options = Options()
 
     # the image that serves as a basis for doing transformations
     base_img = Image(options.image)
 
-    frame_num = 80
+    frame_num = 70
     frame_index = 0
 
     playing = False
@@ -35,6 +36,8 @@ class AnimationManager:
 
         self.options = copy.copy(new_options)
         self.options.transformation_matrix = np.copy(new_options.transformation_matrix)
+
+        self.frame_num = int((7 / 3) * self.options.fps)
 
     # resets frame index to 0 and starts playing
     def start_playing(self):
@@ -63,7 +66,7 @@ class AnimationManager:
         # if playing, return correct image based on current index. If teh animation is finished, (index >= frame num)
         # then stop playing.
         if self.playing:
-            if self.frame_index == self.frame_num:
+            if self.frame_index >= self.frame_num:
                 self.playing = False
             else:
                 img_copy = self.base_img.clone()

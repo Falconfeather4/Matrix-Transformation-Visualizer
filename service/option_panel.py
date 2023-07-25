@@ -6,6 +6,7 @@ from pygame_gui.elements import UILabel
 from pygame_gui.elements import UITextEntryLine
 
 
+# options data structure
 class Options:
     axis = True
     eigenvectors = True
@@ -14,13 +15,14 @@ class Options:
     determinant = True
     unit_length = 80
     transformation_matrix = np.array([[1, 0.5], [-0.5, -1]])
+    fps = 30
 
     # all images in ./images folder except hidden files
-    path = "./images"
-    image_names = [f for f in listdir(path) if not f.startswith('.')]
+    image_names = [f for f in listdir("./images") if not f.startswith('.')]
     image = image_names[0]
 
 
+# Controls options and corresponding option editor ui
 class OptionController:
     options = Options()
 
@@ -32,20 +34,25 @@ class OptionController:
                                              manager=manager, expansion_height_limit=100)
 
         self.matrix_label = UILabel(text="Transformation Matrix:",
-                                    relative_rect=pygame.Rect((50, 220), (200, 50)), manager=manager)
-        self. top_left_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(300, 210, 50, 40),
+                                    relative_rect=pygame.Rect((50, 210), (200, 50)), manager=manager)
+        self. top_left_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(300, 200, 50, 40),
                                                       initial_text=str(self.options.transformation_matrix[0][0]))
-        self.top_right_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(355, 210, 50, 40),
+        self.top_right_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(355, 200, 50, 40),
                                                       initial_text=str(self.options.transformation_matrix[0][1]))
-        self.bottom_left_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(300, 255, 50, 40),
+        self.bottom_left_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(300, 245, 50, 40),
                                                         initial_text=str(self.options.transformation_matrix[1][0]))
-        self.bottom_right_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(355, 255, 50, 40),
+        self.bottom_right_matrix_input = UITextEntryLine(relative_rect=pygame.Rect(355, 245, 50, 40),
                                                          initial_text=str(self.options.transformation_matrix[1][1]))
 
         self.unit_length_label = UILabel(text="Unit Length:", relative_rect=pygame.Rect((50, 350), (100, 40)),
                                          manager=manager)
         self.unit_length_input = UITextEntryLine(relative_rect=pygame.Rect(170, 350, 50, 40),
                                                  initial_text=str(self.options.unit_length))
+
+        self.fps_label = UILabel(text="Fps:", relative_rect=pygame.Rect((250, 350), (100, 40)),
+                                 manager=manager)
+        self.fps_input = UITextEntryLine(relative_rect=pygame.Rect(340, 350, 50, 40),
+                                         initial_text=str(self.options.fps))
 
         self.axis_label = UILabel(text="Axis:", relative_rect=pygame.Rect((50, 460), (100, 40)), manager=manager)
         self.eigenvector_label = UILabel(text="Eigenvectors:", relative_rect=pygame.Rect((50, 520), (110, 40)),
@@ -86,6 +93,9 @@ class OptionController:
 
         self.options.unit_length = int(self.unit_length_input.get_text()) \
             if not (self.unit_length_input.get_text() == "" or int(self.unit_length_input.get_text()) < 10) else 10
+
+        self.options.fps = int(self.fps_input.get_text()) \
+            if not (self.fps_input.get_text() == "" or int(self.fps_input.get_text()) < 5) else 10
 
         self.options.axis = True if self.axis_dropdown.selected_option == "yes" else False
         self.options.eigenvectors = True if self.eigenvector_dropdown.selected_option == "yes" else False

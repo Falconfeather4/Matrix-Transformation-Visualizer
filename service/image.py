@@ -134,16 +134,16 @@ class Image:
         value2_x = vector[0][1]
         value2_y = vector[1][1]
 
-        self.draw_eigenvector_if_not_complex(value1_x, value1_y, rows, cols)
-        self.draw_eigenvector_if_not_complex(value2_x, value2_y, rows, cols)
+        if not (isinstance(value1_x, complex) or isinstance(value2_y, complex)):
+            self.draw_eigenvector(value1_x, value1_y, rows, cols)
+            self.draw_eigenvector(value2_x, value2_y, rows, cols)
 
-    def draw_eigenvector_if_not_complex(self, val_x, val_y, rows, cols):
-        if not (isinstance(val_x, complex) or isinstance(val_y, complex)):
-            if val_x != 0:
-                slope = val_y / val_x
-                draw_eigenvectors_c(ctypes.c_void_p(self.image_array.ctypes.data),
-                                    ctypes.c_int(rows), ctypes.c_int(cols), ctypes.c_float(float(slope)), 0)
-            else:
-                # 0.1 is just a random float
-                draw_eigenvectors_c(ctypes.c_void_p(self.image_array.ctypes.data),
-                                    ctypes.c_int(rows), ctypes.c_int(cols), ctypes.c_float(0.1), 1)
+    def draw_eigenvector(self, val_x, val_y, rows, cols):
+        if val_x != 0:
+            slope = val_y / val_x
+            draw_eigenvectors_c(ctypes.c_void_p(self.image_array.ctypes.data),
+                                ctypes.c_int(rows), ctypes.c_int(cols), ctypes.c_float(float(slope)), 0)
+        else:
+            # 0.1 is just a random float
+            draw_eigenvectors_c(ctypes.c_void_p(self.image_array.ctypes.data),
+                                ctypes.c_int(rows), ctypes.c_int(cols), ctypes.c_float(0.1), 1)
