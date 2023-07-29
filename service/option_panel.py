@@ -1,25 +1,10 @@
 import numpy as np
-import pygame
 from os import listdir
+from options import Options
+import pygame
 from pygame_gui.elements import UIDropDownMenu
 from pygame_gui.elements import UILabel
 from pygame_gui.elements import UITextEntryLine
-
-
-# options data structure
-class Options:
-    axis = True
-    eigenvectors = True
-    grid_lines = True
-    i_j_hat = True
-    determinant = True
-    unit_length = 80
-    transformation_matrix = np.array([[1, 0.5], [-0.5, -1]])
-    fps = 30
-
-    # all images in ./images folder except hidden files
-    image_names = [f for f in listdir("./images") if not f.startswith('.')]
-    image = image_names[0]
 
 
 # Controls options and corresponding option editor ui
