@@ -1,6 +1,6 @@
 import numpy as np
 from image import Image
-from option_panel import Options
+from option_controller import Options
 import copy
 
 
@@ -85,12 +85,9 @@ class AnimationManager:
                 if self.options.eigenvectors:
                     rows, cols, layers = np.shape(img_copy.image_array)
                     img_copy.draw_eigenvectors(rows, cols, self.options)
-            elif self.frame_index == self.frame_num:
-                last_frame_index = self.frame_index - 1
-                transformation_matrix = identity_matrix + last_frame_index * self.calculate_step_matrix()
-                img_copy.do_transformations(transformation_matrix, self.options)
             else:
-                transformation_matrix = identity_matrix + self.frame_index * self.calculate_step_matrix()
+                last_frame_index = self.frame_index - 1 if self.frame_index == self.frame_num else self.frame_index
+                transformation_matrix = identity_matrix + last_frame_index * self.calculate_step_matrix()
                 img_copy.do_transformations(transformation_matrix, self.options)
 
             self.last_display_img = img_copy

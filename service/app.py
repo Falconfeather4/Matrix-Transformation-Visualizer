@@ -1,4 +1,4 @@
-from option_panel import OptionController
+from option_controller import OptionController
 from animation_manager import AnimationManager
 import cv2
 import pygame
