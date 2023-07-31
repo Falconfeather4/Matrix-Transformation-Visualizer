@@ -1,6 +1,6 @@
 import numpy as np
 from os import listdir
-from options import Options
+from model.options import Options
 import pygame
 from pygame_gui.elements import UIDropDownMenu
 from pygame_gui.elements import UILabel

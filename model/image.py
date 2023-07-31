@@ -16,7 +16,7 @@ overlay_image_c = lib.overlay_image
 
 # And Image that contains an 3d np array representing rgb pixels
 class Image:
-    img_root_path = "images/"
+    img_root_path = "./images/"
 
     def __init__(self, name=None, image_array=None):
         if image_array is None:

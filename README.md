@@ -8,7 +8,11 @@ Users can choose to display:
 - eigenvectors
 - grid lines
 
-## Adding Images
+## How to run
+$ pip3 install -r requirements.txt<br>
+$ python3 ./app.py
+
+### Adding Images
 Please add images into the /images folder.
 Any image type supported by OpenCV can be used:
 - Windows bitmap (bmp)
@@ -18,4 +22,16 @@ Any image type supported by OpenCV can be used:
 - JPEG 2000 (jp2)
 - TIFF files (tiff, tif)
 - Portable network graphics (png)
+
+## UML - Sequence diagram
+Below is the sequence diagram for the method App.on_excecute():
+![](sequence_diagram.jpeg)
+
+### Screenshots of Program:
+Before transformation:
+![](before.png)
+
+After transformation:
+![](after.png)
+
 

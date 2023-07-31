@@ -1,6 +1,6 @@
 import numpy as np
-from image import Image
-from option_controller import Options
+from model.image import Image
+from model.options import Options
 import copy
 
 
