@@ -1,4 +1,4 @@
-# Visualizing-Matrix-Transformations
+# Matrix-Transformation-Visualizer
 This program will visualize linear transformations. Given an image and a 2x2 transformation matrix, the program will animate the transformation on the image. This project is inspired by 3Blue1Brown's Essence of Linear Algebra series: https://www.3blue1brown.com/topics/linear-algebra
 
 Users can choose to display:
