@@ -27,11 +27,7 @@ Any image type supported by OpenCV can be used:
 Below is the sequence diagram for the method App.on_excecute():
 ![](sequence_diagram.jpeg)
 
-### Screenshots of Program:
-Before transformation:
-![](before.png)
-
-After transformation:
-![](after.png)
+### Demo:
+![](image-transformation.gif)
 
 
