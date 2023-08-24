@@ -23,11 +23,12 @@ Any image type supported by OpenCV can be used:
 - TIFF files (tiff, tif)
 - Portable network graphics (png)
 
+### Demo:
+![](image-transformation.gif)
+
 ## UML - Sequence diagram
 Below is the sequence diagram for the method App.on_excecute():
 ![](sequence_diagram.jpeg)
 
-### Demo:
-![](image-transformation.gif)
 
 
